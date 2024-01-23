@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { Loader } from "@googlemaps/js-api-loader";
 
 @customElement("google-map")
 export class GoogleMapsElement extends LitElement {
@@ -16,16 +17,18 @@ export class GoogleMapsElement extends LitElement {
     super();
   }
 
-  firstUpdated() {
-    this.loadMap();
-  }
-
-  async loadMap() {
+  async firstUpdated() {
     try {
-      const url = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&callback=console.debug&libraries=maps,marker&v=beta`;
-      await import(url);
+      const loader = new Loader({
+        apiKey: this.apiKey,
+        version: "weekly",
+        libraries: ["maps", "marker"],
+      });
 
-      const _map = new google.maps.Map(this.shadowRoot.getElementById("map"), {
+      const google = await loader.load();
+
+      // eslint-disable-next-line
+      const map = new google.maps.Map(this.shadowRoot.getElementById("map"), {
         center: { lat: 41.87812805175781, lng: -87.63029479980469 },
         zoom: 8,
       });
