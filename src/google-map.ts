@@ -2,6 +2,8 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { Loader } from "@googlemaps/js-api-loader";
 
+const chicago = { lat: 41.87812805175781, lng: -87.63029479980469 };
+
 @customElement("google-map")
 export class GoogleMapsElement extends LitElement {
   static styles = css`
@@ -29,9 +31,43 @@ export class GoogleMapsElement extends LitElement {
 
       // eslint-disable-next-line
       const map = new google.maps.Map(this.shadowRoot.getElementById("map"), {
-        center: { lat: 41.87812805175781, lng: -87.63029479980469 },
+        center: chicago,
         zoom: 8,
       });
+
+      const marker = new google.maps.Marker({
+        position: chicago,
+        map: map,
+      });
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: "<h1>My Home</h1>",
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.open(map, marker);
+      });
+
+      function addMarker(props: any) {
+        const marker = new google.maps.Marker({
+          position: props.location,
+          map: map,
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: props.content,
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+      }
+
+      google.maps.event.addListener(map, "click", (event: any) => {
+        addMarker({ location: event.latLng, content: "<h1>My Home</h1>" });
+      });
+
+      addMarker({ location: chicago, content: "<h1>My Home</h1>" });
     } catch (error) {
       console.error("Error loading Google Maps API:", error);
     }
