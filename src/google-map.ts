@@ -29,8 +29,7 @@ export class GoogleMapsElement extends LitElement {
 
       const google = await loader.load();
 
-      // eslint-disable-next-line
-      const map = new google.maps.Map(this.shadowRoot.getElementById("map"), {
+      const map = new google.maps.Map(this.shadowRoot?.getElementById("map")!, {
         center: chicago,
         zoom: 8,
       });
@@ -48,6 +47,7 @@ export class GoogleMapsElement extends LitElement {
         infoWindow.open(map, marker);
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       function addMarker(props: any) {
         const marker = new google.maps.Marker({
           position: props.location,
